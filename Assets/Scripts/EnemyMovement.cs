@@ -4,7 +4,6 @@ using UnityEngine;
 using UnityEngine.AI;
 public class EnemyMovement : MonoBehaviour
 {
-
     public Transform target;
     public LayerMask obstaclesLayers;
     public float speed;
@@ -36,7 +35,10 @@ public class EnemyMovement : MonoBehaviour
     public GameObject player;
     public EnemyLineOfSight myLineOfSight;
 
-    // Start is called before the first frame update
+    public Dictionary<EStates, bool> statesTriggers = new Dictionary<EStates, bool>();
+    public float sqrDistance;
+
+    
 
     private void Awake()
     {
@@ -47,8 +49,22 @@ public class EnemyMovement : MonoBehaviour
         myAnim = GetComponent<Animator>();
         startPos = transform.position;
         myBehaviours = GetComponent<EnemyBehaviours>();
+
+        statesTriggers.Add(EStates.PATROL, false); //por cada estado agregar tambien la desactivacion en SetAllStatesToFalse
+        statesTriggers.Add(EStates.CHASE, false);
+        statesTriggers.Add(EStates.ALERT, false);
+        statesTriggers.Add(EStates.IDLE, false);
         
     }
+
+    public void SetAllStatesToFalse()
+    {
+        statesTriggers[EStates.PATROL] = false;
+        statesTriggers[EStates.CHASE] = false;
+        statesTriggers[EStates.ALERT] = false;
+        statesTriggers[EStates.IDLE] = false;
+    }
+
     void Start()
     {
         //inicializa los waypoints con un pathfinding del nodo incial al final, luego los asigna a una array de waypoints que el robot recorrerá y a la cual volverá en su estado idle.
@@ -68,12 +84,12 @@ public class EnemyMovement : MonoBehaviour
     void Update()
     {
         GetDir();
+        SetSpeed();
+        sqrDistance = (player.transform.position - transform.position).sqrMagnitude;
     }
 
     void GetDir()
     {
-
-
         Vector3 direction = myAgent.transform.InverseTransformDirection(myAgent.velocity).normalized;
         float turnForce = direction.x;
         myAnim.SetFloat("AngularSpeed", turnForce * 2);
@@ -83,7 +99,7 @@ public class EnemyMovement : MonoBehaviour
         myAnim.SetFloat("Speed", myAgent.speed + offsetSpeed);
 
 
-        if (myBehaviours.patrolBehaviour == true)
+        if (statesTriggers[EStates.PATROL] == true)
         {
             target = myPatrolWaypoints[currentWaypoint].transform;
 
@@ -94,35 +110,27 @@ public class EnemyMovement : MonoBehaviour
 
             if (currentWaypoint == waypointCount - 1 && Vector3.Distance(transform.position, myPatrolWaypoints[currentWaypoint].transform.position) <= 1f)
             {
-                myBehaviours.endedPatrol = true;
-                reverseArray = false;
-            }
-
-        }
-
-        if (myBehaviours.seekPlayerBehaviour == true)
-        {
-            for (int i = 0; i < 1; i++)
-            {
-               
-            }
-               
-        }
-
-        if (myBehaviours.idleBehaviour == true)
-        {
-            if (reverseArray == false)
-            {
                 System.Array.Reverse(myPatrolWaypoints);
-                reverseArray = true;
+                //reverseArray = false;
             }
 
-            target = myPatrolWaypoints[0];
-            myAgent.speed = 0;
         }
 
-        if (myBehaviours.chasePlayerBehaviour == true || myBehaviours.alertBehaviour == true)
+        //if (myBehaviours.idleBehaviour == true)
+        //{
+        //    if (reverseArray == false)
+        //    {
+        //        System.Array.Reverse(myPatrolWaypoints);
+        //        reverseArray = true;
+        //    }
+
+        //    target = myPatrolWaypoints[0];
+        //    myAgent.speed = 0;
+        //}
+
+        if (statesTriggers[EStates.CHASE]|| statesTriggers[EStates.ALERT])
         {
+            myAnim.SetBool("PlayerInSight", true);
 
             nearWaypoints = Physics.OverlapSphere(transform.position, 10, myLayermask);
 
@@ -132,16 +140,13 @@ public class EnemyMovement : MonoBehaviour
                 if (shorterDistance < distanceToNearest)
                 {
                     distanceToNearest = shorterDistance;
-                    nearestWaypoint = item.transform;
-                                   
+                    nearestWaypoint = item.transform;                                   
                 }
 
                 
             }
 
             distanceToNearest = 10;
-
-
 
             var playerNearWaypoints = Physics.OverlapSphere(player.transform.position, 10, myLayermask);
 
@@ -160,10 +165,7 @@ public class EnemyMovement : MonoBehaviour
           
             myAstarAgent.starterNode = nearestWaypoint.GetComponent<Node>();          
             myAstarAgent.endNode = playerNearestWaypoint.GetComponent<Node>();
-
             
-            
-        
             myAstarAgent.PathFindingA();
 
 
@@ -186,18 +188,86 @@ public class EnemyMovement : MonoBehaviour
             {
                 target = player.transform;
             }
-               
 
+           
             
-          
-
-            
-
-
+           
         }
 
     }
 
+    void SetSpeed()
+    {
+        if (statesTriggers[EStates.CHASE])
+        {
+            myAnim.SetLayerWeight(1, 1 + Time.deltaTime);
+            myAnim.SetBool("PlayerInSight", true);
+
+            if (myAgent.speed <= 1f)
+                    myAgent.speed += Time.deltaTime / 3;
+
+                if (offsetSpeed <= 2f)
+                    offsetSpeed += Time.deltaTime / 2;
+
+            if (Vector3.Distance(transform.position, player.transform.position) < 1.5f)
+            {
+                myAgent.speed = 0;
+                speed = 0;
+                offsetSpeed = 0;
+
+                float angleBtwnPlayerAndForward = Vector3.Angle(transform.forward, 
+                    (player.transform.position - transform.position).normalized);
+                transform.LookAt(player.transform.position);
+            }
+        }
+
+
+        if (statesTriggers[EStates.PATROL])
+        {
+            myAnim.SetLayerWeight(1, 0);
+            myAnim.SetBool("PlayerInSight", false);
+            if (myAgent.speed >= 0.5f)
+                myAgent.speed -= Time.deltaTime / 3;
+
+            if (myAgent.speed < 0.5f)
+                myAgent.speed += Time.deltaTime;
+
+            if (offsetSpeed >= 0f)
+                offsetSpeed -= Time.deltaTime / 2;
+        }
+
+        if (statesTriggers[EStates.ALERT])
+        {
+            if (myAgent.speed >= 0.5f)
+                myAgent.speed -= Time.deltaTime / 3;
+
+            if (myAgent.speed < 0.5f)
+                myAgent.speed += Time.deltaTime;
+
+            if (offsetSpeed >= 0f)
+                offsetSpeed -= Time.deltaTime / 2;
+        }
+
+        if (statesTriggers[EStates.IDLE])
+        {
+            if (myAgent.speed >= 0f)
+                myAgent.speed -= Time.deltaTime;
+
+            if (offsetSpeed >= 0f)
+                offsetSpeed -= Time.deltaTime;
+        }
+       
+    }
+
    
 
+}
+
+public enum EStates
+{
+    PATROL,
+    CHASE,
+    ALERT,
+    IDLE
+    
 }

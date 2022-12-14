@@ -25,11 +25,19 @@ public class Bullet : MonoBehaviour
     void Update()
     {
         Vector3 direction = new Vector3(player.transform.position.x - transform.position.x, 0, player.transform.position.z - transform.position.z).normalized;
-        transform.position += direction * speed * Time.deltaTime;
+
+        if (Vector3.Angle(transform.forward, direction) < 10)
+        {
+            transform.position += direction * speed * Time.deltaTime;
+        }
+        else
+        {
+            transform.position += transform.forward * speed * Time.deltaTime;
+        }
+
         time += Time.deltaTime;
 
-
-        if (Vector3.Distance(transform.position, player.transform.position) <= 1.35f)
+        if (Vector3.Distance(transform.position, player.transform.position) <= 0.5f)
         {
             myPlayerHealth.GetComponent<PlayerHealth>().health -= 10;
             Destroy(gameObject);
@@ -39,6 +47,5 @@ public class Bullet : MonoBehaviour
         {
             Destroy(gameObject);
         }
-
     }
 }

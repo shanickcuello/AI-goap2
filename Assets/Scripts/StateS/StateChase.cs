@@ -52,9 +52,7 @@ public class StateChase<T> : FSMState<T>
             if (myBehaviours.animWeight <= 1) myBehaviours.animWeight += Time.deltaTime;
             myBehaviours.myAnim.SetLayerWeight(1, myBehaviours.animWeight);
             myBehaviours.myAnim.SetBool("PlayerInSight", true);
-        }
-
-        
+        }       
 
     }
 

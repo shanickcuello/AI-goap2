@@ -27,14 +27,15 @@ public class CheckCurrentNode : MonoBehaviour
     void Update()
     {
         Vector3 fromPosition = transform.position;
-        if (myBehaviours.seekPlayerBehaviour == true && myMovement.mySeekWaypoints.Length >= 2)
+        
+        if (myMovement.statesTriggers[EStates.ALERT] && myMovement.mySeekWaypoints.Length >= 2)
         {
             Vector3 toPositionSeek = myMovement.mySeekWaypoints[1].transform.position;
             direction = toPositionSeek - fromPosition;
             GetNeightbor(direction);
         }
 
-        if (myBehaviours.chasePlayerBehaviour || myBehaviours.alertBehaviour)
+        if (myMovement.statesTriggers[EStates.CHASE] || myMovement.statesTriggers[EStates.ALERT])
         {
             if (myAstar._list.Count >= 2)
             {
@@ -54,13 +55,13 @@ public class CheckCurrentNode : MonoBehaviour
         if (Physics.Raycast(transform.position, dir, out hit, Mathf.Infinity, myLayermask))
         {
            
-            if (myMovement.currentWaypoint == 0 && myBehaviours.seekPlayerBehaviour == true)
+            if (myMovement.currentWaypoint == 0 && myMovement.statesTriggers[EStates.ALERT])
             {
                 myMovement.currentWaypoint = 1;
             
             }
 
-            if (myBehaviours.chasePlayerBehaviour == true || myBehaviours.alertBehaviour == true)
+            if (myMovement.statesTriggers[EStates.CHASE] || myMovement.statesTriggers[EStates.ALERT])
             {
                 myMovement.target = myAstar._list[1].transform;
 

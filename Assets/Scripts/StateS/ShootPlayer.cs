@@ -32,13 +32,8 @@ public class ShootPlayer : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-                if (shootCount >= 5)
-                {                   
-                    var newBullet = GameObject.Instantiate(bullet);
-                    newBullet.transform.position = spawnPos.transform.position;
-                    shootCount = 0;
                 
-
-                }
     }
+    
+    
 }

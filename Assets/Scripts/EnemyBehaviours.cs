@@ -27,7 +27,7 @@ public class EnemyBehaviours : MonoBehaviour
     public GameObject playerSeeker;
     public PlayerSeeker mySeeker;
     public float animWeight;
-    public GameObject[] myEnemyLineList; 
+    public GameObject[] myEnemyLineList;
 
     FSM<string> _fsm;
 
@@ -72,7 +72,7 @@ public class EnemyBehaviours : MonoBehaviour
         alert.AddTransition("AlertToPatrol", patrol);
         alert.AddTransition("AlertToSeek", seek);
 
-        
+
         _fsm = new FSM<string>(patrol);
     }
 
@@ -80,19 +80,16 @@ public class EnemyBehaviours : MonoBehaviour
     void Update()
     {
         Transitions();
-        _fsm.OnUpdate();   
+        _fsm.OnUpdate();
     }
 
     void Transitions()
     {
-     if (idleBehaviour == true && endedPatrol == false && seekPlayerBehaviour == false)
+        if (idleBehaviour == true && endedPatrol == false && seekPlayerBehaviour == false)
         {
-            
-                _fsm.Transition("IdleToPatrol");
-                idleBehaviour = false;
-                patrolBehaviour = true;
-         
-                   
+            _fsm.Transition("IdleToPatrol");
+            idleBehaviour = false;
+            patrolBehaviour = true;
         }
 
         if (idleBehaviour == true && myLineOfSight.playerOnSight == true)
@@ -107,7 +104,7 @@ public class EnemyBehaviours : MonoBehaviour
             _fsm.Transition("PatrolToIdle");
             patrolBehaviour = false;
             idleBehaviour = true;
-            
+
         }
 
         //transicion de perseguir player
@@ -116,16 +113,16 @@ public class EnemyBehaviours : MonoBehaviour
             _fsm.Transition("PatrolToChase");
             patrolBehaviour = false;
             chasePlayerBehaviour = true;
-        
 
-        //    chasePlayerBehaviour = true;
-         //   patrolBehaviour = false;
+
+            //    chasePlayerBehaviour = true;
+            //   patrolBehaviour = false;
         }
 
 
         //falta shoottochase
 
-       if (Vector3.Distance(transform.position, player.transform.position) > myLineOfSight.seePlayerDist / 2 && shootingPlayerBehaviour == true)
+        if (Vector3.Distance(transform.position, player.transform.position) > myLineOfSight.seePlayerDist / 2 && shootingPlayerBehaviour == true)
         {
             _fsm.Transition("ShootToChase");
             shootingPlayerBehaviour = false;
@@ -133,12 +130,12 @@ public class EnemyBehaviours : MonoBehaviour
 
         }
 
-    
+
 
 
         if (myLineOfSight.playerOnSight == true && seenPlayer == true)
         {
-            if(Vector3.Distance(transform.position, player.transform.position) < myLineOfSight.seePlayerDist / 2)
+            if (Vector3.Distance(transform.position, player.transform.position) < myLineOfSight.seePlayerDist / 2)
             {
                 _fsm.Transition("ChaseToShoot");
                 shootingPlayerBehaviour = true;
@@ -160,7 +157,7 @@ public class EnemyBehaviours : MonoBehaviour
             _fsm.Transition("AlertToChase");
             alertBehaviour = false;
             chasePlayerBehaviour = true;
-          
+
         }
 
         if (endedSeeking == true)
@@ -179,15 +176,15 @@ public class EnemyBehaviours : MonoBehaviour
             _fsm.Transition("SeekToChase");
             seekPlayerBehaviour = false;
             chasePlayerBehaviour = true;
-           
-        }     
+
+        }
 
         if (patrolBehaviour == true && mySeeker.seenPlayer == true)
         {
             _fsm.Transition("PatrolToSeek");
             patrolBehaviour = false;
             seekPlayerBehaviour = true;
-          
+
         }
 
         if (idleBehaviour == true && mySeeker.seenPlayer == true)
@@ -196,7 +193,7 @@ public class EnemyBehaviours : MonoBehaviour
             endedPatrol = false;
             idleBehaviour = false;
             seekPlayerBehaviour = true;
-           
+
         }
 
         if (alerCounter >= 5)
@@ -204,7 +201,7 @@ public class EnemyBehaviours : MonoBehaviour
             _fsm.Transition("AlertToPatrol");
             alertBehaviour = false;
             patrolBehaviour = true;
-          
+
         }
 
         if (mySeeker.seenPlayer == true && alertBehaviour == true)

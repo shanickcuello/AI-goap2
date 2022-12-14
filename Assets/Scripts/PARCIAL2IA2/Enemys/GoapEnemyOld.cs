@@ -4,10 +4,10 @@ using System.Collections.Generic;
 using FSM;
 using UnityEngine;
 
-public class GoapEnemy : MonoBehaviour
+public class GoapEnemyOld : MonoBehaviour
 {
    
-    public PatrolState patrolState;
+   /* public PatrolState patrolState;
     public ChaseState chaseState;
     public AttackState attackState;
     
@@ -102,5 +102,5 @@ public class GoapEnemy : MonoBehaviour
         _fsm = GoapPlanner.ConfigureFSM(plan, StartCoroutine);
         _fsm.Active = true;
     }
-
+*/
 }

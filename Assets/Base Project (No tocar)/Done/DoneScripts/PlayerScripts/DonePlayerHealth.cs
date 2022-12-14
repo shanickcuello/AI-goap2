@@ -1,8 +1,11 @@
 using UnityEngine;
 using System.Collections;
+using System;
 
 public class DonePlayerHealth : MonoBehaviour
 {
+
+
     public float health = 100f;							// How much health the player has left.
 	public float resetAfterDeathTime = 5f;				// How much time from the player dying to the level reseting.
 	public AudioClip deathClip;							// The sound effect of the player dying.
@@ -14,9 +17,11 @@ public class DonePlayerHealth : MonoBehaviour
 	private DoneSceneFadeInOut sceneFadeInOut;			// Reference to the SceneFadeInOut script.
 	private DoneLastPlayerSighting lastPlayerSighting;	// Reference to the LastPlayerSighting script.
 	private float timer;								// A timer for counting to the reset of the level once the player is dead.
-	private bool playerDead;							// A bool to show if the player is dead or not.
-	
-	private static DonePlayerHealth _instance;
+	private bool playerDead;                            // A bool to show if the player is dead or not.
+
+    private Vector3 playerPos;
+
+    private static DonePlayerHealth _instance;
 	public static DonePlayerHealth Instance
 	{
 		get
@@ -24,8 +29,10 @@ public class DonePlayerHealth : MonoBehaviour
 			return _instance;
 		}
 	}
-	
-	void Awake ()
+
+    public Vector3 PlayerPos { get => playerPos;}
+
+    void Awake ()
 	{
 		_instance = this;
 
@@ -40,6 +47,8 @@ public class DonePlayerHealth : MonoBehaviour
 	
     void Update ()
 	{
+		UpdatePosition();
+
 		// If health is less than or equal to 0...
 		if(health <= 0f)
 		{
@@ -55,9 +64,13 @@ public class DonePlayerHealth : MonoBehaviour
 			}
 		}
 	}
-	
-	
-	void PlayerDying ()
+
+    private void UpdatePosition()
+    {
+		playerPos = transform.position;
+    }
+
+    void PlayerDying ()
 	{
 		// The player is now dead.
 		playerDead = true;

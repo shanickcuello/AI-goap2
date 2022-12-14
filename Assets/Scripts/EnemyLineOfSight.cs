@@ -15,12 +15,14 @@ public class EnemyLineOfSight : MonoBehaviour
     public bool playerOnAngle;
     public bool playerOnSight = false;
     public Animator myAnim;
+    public EnemyWorldState myWorldState;
  
     // Start is called before the first frame update
 
     private void Awake()
     {
         player = GameObject.FindGameObjectWithTag("Player");
+        myWorldState = GetComponent<EnemyWorldState>();
         myAnim = GetComponent<Animator>();
     }
     void Start()
@@ -60,7 +62,8 @@ public class EnemyLineOfSight : MonoBehaviour
                 {
                    
                     playerOnSight = true;
-                  
+                    myWorldState.ResetTimer();
+
                 }
 
                 if (hit.collider.gameObject != player || Vector3.Distance(transform.position, player.transform.position) > seePlayerDist)

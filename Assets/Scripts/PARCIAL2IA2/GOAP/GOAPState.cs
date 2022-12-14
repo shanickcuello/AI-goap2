@@ -3,7 +3,7 @@ using System.Linq;
 
 public class GOAPState
 {
-    public Dictionary<EEffects, bool> values = new Dictionary<EEffects, bool>();
+    public Dictionary<string, bool> values = new Dictionary<string, bool>();
     public GOAPAction generatingAction = null;
     public int step = 0;
 
@@ -53,15 +53,13 @@ public class GOAPState
         return values.Count == 0 ? 0 : 31 * values.Count + 31 * 31 * values.First().GetHashCode();
     }
 
-
     public override string ToString()
     {
-        throw new System.NotImplementedException();
-        //var str = "";
-        //foreach (var kv in values.OrderBy(x => x.Key))
-        //{
-        //    str += $"{kv.Key:12} : {kv.Value}\n";
-        //}
-        //return "--->" + (generatingAction != null ? generatingAction.name : "NULL") + "\n" + str;
+        var str = "";
+        foreach (var kv in values.OrderBy(x => x.Key))
+        {
+            str += $"{kv.Key:12} : {kv.Value}\n";
+        }
+        return "--->" + (generatingAction != null ? generatingAction.name : "NULL") + "\n" + str;
     }
 }

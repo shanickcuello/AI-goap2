@@ -4,22 +4,30 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using VSCodeEditor;
 
-public class AStar<T> {
+public class AStar<T>
+{
+    public const float CONSTANTVAR = 30;
 
-    public IEnumerable<T> Run(T                                     start,
-                              Func<T, bool>                         isGoal,
+    public IEnumerable<T> Run(T start,
+                              Func<T, bool> isGoal,
                               Func<T, IEnumerable<WeightedNode<T>>> explode,
-                              Func<T, float>                        getHeuristic) {
-        
-        var queue     = new PriorityQueue<T>();
+                              Func<T, float> getHeuristic)
+    {
+
+
+
+
+        var queue = new PriorityQueue<T>();
         var distances = new Dictionary<T, float>();
-        var parents   = new Dictionary<T, T>();
-        var visited   = new HashSet<T>();
+        var parents = new Dictionary<T, T>();
+        var visited = new HashSet<T>();
 
         distances[start] = 0;
         queue.Enqueue(new WeightedNode<T>(start, 0));
-        
-        while (!queue.IsEmpty) {
+
+        while (!queue.IsEmpty)
+        {
+
             var dequeued = queue.Dequeue();
             visited.Add(dequeued.Element);
 
@@ -27,8 +35,9 @@ public class AStar<T> {
 
             var toEnqueue = explode(dequeued.Element);
 
-            foreach (var transition in toEnqueue) {
-                var neighbour                   = transition.Element;
+            foreach (var transition in toEnqueue)
+            {
+                var neighbour = transition.Element;
                 var neighbourToDequeuedDistance = transition.Weight;
 
                 var startToNeighbourDistance =
@@ -37,9 +46,10 @@ public class AStar<T> {
 
                 var newDistance = startToDequeuedDistance + neighbourToDequeuedDistance;
 
-                if (!visited.Contains(neighbour) && startToNeighbourDistance > newDistance) {
+                if (!visited.Contains(neighbour) && startToNeighbourDistance > newDistance)
+                {
                     distances[neighbour] = newDistance;
-                    parents[neighbour]   = dequeued.Element;
+                    parents[neighbour] = dequeued.Element;
 
                     queue.Enqueue(new WeightedNode<T>(neighbour, newDistance + getHeuristic(neighbour)));
                 }
