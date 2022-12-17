@@ -3,11 +3,12 @@ using System.Linq;
 
 public class GOAPState
 {
-    public Dictionary<string, bool> values = new Dictionary<string, bool>();
+    public Dictionary<string, object> values = new Dictionary<string, object>();
     public GOAPAction generatingAction = null;
     public int step = 0;
 
     #region CONSTRUCTOR
+
     public GOAPState(GOAPAction gen = null)
     {
         generatingAction = gen;
@@ -22,8 +23,10 @@ public class GOAPState
             else
                 values.Add(elem.Key, elem.Value);
         }
+
         generatingAction = gen;
     }
+
     #endregion
 
     public override bool Equals(object obj)
@@ -31,7 +34,7 @@ public class GOAPState
         var other = obj as GOAPState;
         var result =
             other != null
-            && other.generatingAction == generatingAction       //Very important to keep! TODO: REVIEW
+            && other.generatingAction == generatingAction //Very important to keep! TODO: REVIEW
             && other.values.Count == values.Count
             && other.values.All(kv => kv.In(values));
         //&& other.values.All(kv => values.Contains(kv));
@@ -60,6 +63,7 @@ public class GOAPState
         {
             str += $"{kv.Key:12} : {kv.Value}\n";
         }
+
         return "--->" + (generatingAction != null ? generatingAction.name : "NULL") + "\n" + str;
     }
 }

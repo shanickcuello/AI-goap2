@@ -29,64 +29,7 @@ public class GoapEnemy : MonoBehaviour {
         //OnlyPlan();
           PlanAndExecute();
     }
-
-    private void OnlyPlan() {
-       
-        
-        var actions = new List<GOAPAction>{
-                                              new GOAPAction("Patrol")
-                                                  .Effect("isPlayerInSight", true)
-                                                  .LinkedState(patrolState),
-
-                                              new GOAPAction("Chase")
-                                                 .Pre("isPlayerInSight", true)
-                                                 .Effect("isPlayerInRange", true)
-                                                 .LinkedState(chaseState),
-
-                                              new GOAPAction("Attack")
-                                                 .Pre("isPlayerInRange",  true)
-                                                 .Pre("isPlayerInSight", true)
-                                                 .Pre("hasBullet", true)
-                                                 .Effect("isPlayerAlive", false)
-                                                 .Effect("hasBullet", false)
-                                                 .Cost(2f)
-                                                 .LinkedState(attackState),
-
-                                              new GOAPAction("Idle")
-                                                 .Pre("isPlayerAlive", false)
-                                                 .Pre("alarmTriggered",  true)
-                                                 .Effect("missionFinished", true)
-                                                 .LinkedState(idleState),
-
-                                              new GOAPAction("ReloadWeapon")
-                                                 .Pre("hasBullet", false)
-                                                 .Effect("hasBullet", true)
-                                                 .LinkedState(reloadState),
-                                              
-                                              new GOAPAction("Alert")
-                                                  .Pre("alarmTriggered", true)
-                                                  .Pre("isPlayerAlive", true)
-                                                  .Effect("inAlert", true)
-                                                  .LinkedState(alertState)
-        };
-
-        var from = new GOAPState();
-        from.values["alarmTriggered"] = false;
-        from.values["isPlayerInSight"]    = false;
-        from.values["isPlayerInRange"] = false;
-        from.values["hasBullet"]   = true;
-        from.values["isPlayerAlive"]  = true;
-        from.values["missionFinished"]  = false;
-        from.values["inAlert"] = false;
-
-        var to = new GOAPState();
-        to.values["missionFinished"] = false;
-
-        var planner = new GoapPlanner();
-
-        planner.Run(from, to, actions, OnReplan);
-    }
-
+    
     private void PlanAndExecute()
     {
         var actions = new List<GOAPAction> //GOAP goap ENTREGA PARCIAL IA2-parcial 2 
@@ -131,9 +74,7 @@ public class GoapEnemy : MonoBehaviour {
                     .Effect("isPlayerAlive", false)
                     .LinkedState(idleState)
             };
-
-
-
+        
             var from = new GOAPState();
             from.values["alarmTriggered"] = false;
             from.values["isPatrolling"] = false;
@@ -145,9 +86,8 @@ public class GoapEnemy : MonoBehaviour {
             from.values["isIdle"] = false;
             from.values["doneRoutine"] = false;
             from.values["foundPlayer"] = false;
-
-
-                var to = new GOAPState();
+            
+            var to = new GOAPState();
             to.values["isPlayerAlive"] = false;
 
             var planner = new GoapPlanner();

@@ -1,11 +1,12 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using FSM;
 using UnityEngine;
 
 public class GOAPAction {
 
-    public Dictionary<string, bool> preconditions { get; private set; }
-    public Dictionary<string, bool> effects       { get; private set; }
+    public Dictionary<string, object> preconditions { get; private set; }
+    public Dictionary<string, object> effects       { get; private set; }
     public string                   name          { get; private set; }
     public float                    cost          { get; private set; }
     public IState                   linkedState   { get; private set; }
@@ -14,10 +15,10 @@ public class GOAPAction {
     public GOAPAction(string name) {
         this.name     = name;
         cost          = 1f;
-        preconditions = new Dictionary<string, bool>();
-        effects       = new Dictionary<string, bool>();
+        preconditions = new Dictionary<string, object>();
+        effects       = new Dictionary<string, object>();
     }
-
+    
     public GOAPAction Cost(float cost) {
         if (cost < 1f) {
             //Costs < 1f make the heuristic non-admissible. h() could overestimate and create sub-optimal results.
@@ -33,7 +34,7 @@ public class GOAPAction {
         preconditions[s] = value;
         return this;
     }
-
+    
     public GOAPAction Effect(string s, bool value) {
         effects[s] = value;
         return this;

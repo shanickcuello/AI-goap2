@@ -1,12 +1,16 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class EnemyWorldState : MonoBehaviour
 {
     public bool seenPlayer = false;
     public float timer;
+    public float distanceToPlayer;
+
+    public float DistanceToPlayer
+    {
+        get => distanceToPlayer;
+        private set => distanceToPlayer = value;
+    }
 
     private void Update()
     {

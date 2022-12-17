@@ -26,7 +26,6 @@ public class ReloadState : MonoBaseState {
         player = GameObject.FindGameObjectWithTag("Player");
         myMovement = GetComponent<EnemyMovement>();
         myWorldState = GetComponent<EnemyWorldState>();
-
     }
     
     public override void Enter(IState @from, Dictionary<string, object> transitionParameters = null)
