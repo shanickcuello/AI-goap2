@@ -1,35 +1,43 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using FSM;
 using UnityEngine;
 using UnityEngine.Serialization;
 
-public class GoapEnemy : MonoBehaviour {
+public class GoapEnemy : MonoBehaviour
+{
+    public PatrolState patrolState;
+    public ChaseState chaseState;
+    public AttackState attackState;
+    public IdleState idleState;
+    public ReloadState reloadState;
+    public AlertState alertState;
 
-   public PatrolState      patrolState; 
-   public ChaseState       chaseState; 
-   public AttackState      attackState; 
-   public IdleState        idleState; 
-   public ReloadState      reloadState;
-   public AlertState       alertState;
-
-   private FiniteStateMachine _fsm;
+    private FiniteStateMachine _fsm;
 
     private float _lastReplanTime;
     private float _replanRate = .5f;
-    
-    
-    void Start() {
-        patrolState.OnNeedsReplan      += OnReplan;
-        chaseState.OnNeedsReplan       += OnReplan;
+
+    private EnemyWorldState enemyWorldState;
+
+    private void Awake()
+    {
+        enemyWorldState = GetComponent<EnemyWorldState>();
+    }
+
+    void Start()
+    {
+        patrolState.OnNeedsReplan += OnReplan;
+        chaseState.OnNeedsReplan += OnReplan;
         attackState.OnNeedsReplan += OnReplan;
         idleState.OnNeedsReplan += OnReplan;
         reloadState.OnNeedsReplan += OnReplan;
         alertState.OnNeedsReplan += OnReplan;
-            
+
         //OnlyPlan();
-          PlanAndExecute();
+        PlanAndExecute();
     }
-    
+
     private void PlanAndExecute()
     {
         var actions = new List<GOAPAction> //GOAP goap ENTREGA PARCIAL IA2-parcial 2 
@@ -71,7 +79,7 @@ public class GoapEnemy : MonoBehaviour {
                 new GOAPAction("Idle")
                     .Pre("isPatrolling", true)
                     .Pre("foundPlayer", false)
-                    .Effect("isPlayerAlive", false)
+                    .Effect("isPlayerAlive", 0)
                     .LinkedState(idleState)
             };
         
@@ -81,40 +89,42 @@ public class GoapEnemy : MonoBehaviour {
             from.values["isPlayerInSight"] = false;
             from.values["isPlayerInRange"] = false;
             from.values["hasBullet"] = true;
-            from.values["isPlayerAlive"] = true;
+            from.values["isPlayerAlive"] = enemyWorldState.PlayerLife;
             from.values["missionFinished"] = false;
             from.values["isIdle"] = false;
             from.values["doneRoutine"] = false;
             from.values["foundPlayer"] = false;
             
             var to = new GOAPState();
-            to.values["isPlayerAlive"] = false;
+            to.values["isPlayerAlive"] = 0;
 
-            var planner = new GoapPlanner();
+        var planner = new GoapPlanner();
 
-            planner.Run(from, to, actions, OnReplan);
+        planner.Run(from, to, actions, OnReplan);
 
-            var plan = planner.Run(from, to, actions, OnReplan);//GOAP goap ENTREGA PARCIAL IA2-parcial 2 
+        var plan = planner.Run(from, to, actions, OnReplan); //GOAP goap ENTREGA PARCIAL IA2-parcial 2 
 
-        ConfigureFsm(plan);//GOAP goap ENTREGA PARCIAL IA2-parcial 2 
-
+        ConfigureFsm(plan); //GOAP goap ENTREGA PARCIAL IA2-parcial 2 
     }
 
-    private void OnReplan() {
-        if (Time.time >= _lastReplanTime + _replanRate) {
+    private void OnReplan()
+    {
+        if (Time.time >= _lastReplanTime + _replanRate)
+        {
             _lastReplanTime = Time.time;
         }
-        else {
+        else
+        {
             return;
         }
-        
-        PlanAndExecute();//GOAP goap ENTREGA PARCIAL IA2-parcial 2 
+
+        PlanAndExecute(); //GOAP goap ENTREGA PARCIAL IA2-parcial 2 
     }
 
-    private void ConfigureFsm(IEnumerable<GOAPAction> plan) {
+    private void ConfigureFsm(IEnumerable<GOAPAction> plan)
+    {
         Debug.Log("Completed Plan");
         _fsm = GoapPlanner.ConfigureFSM(plan, StartCoroutine); //GOAP goap ENTREGA PARCIAL IA2-parcial 2 
         _fsm.Active = true;
     }
-
 }

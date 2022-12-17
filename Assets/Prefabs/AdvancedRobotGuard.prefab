@@ -1538,6 +1538,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f40437f00d6098c46abbcc4df1a06cd4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  bulletInstantiationPosition: {fileID: 483414}
   myLineOfSight: {fileID: 0}
   playerHealth: {fileID: 0}
   myRobot: {fileID: 0}
@@ -1656,6 +1657,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   seenPlayer: 0
   timer: 0
+  distanceToPlayer: 0
+  DistanceToSeePlayer: 5
+  PlayerLife: 0
 --- !u!1 &163202
 GameObject:
   m_ObjectHideFlags: 0
@@ -1934,7 +1938,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 177262}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.05, z: 0.2}
+  m_LocalPosition: {x: -0, y: 0.05, z: 0.239}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 415944}

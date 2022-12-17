@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class AttackState : MonoBaseState
 {
-
+    [SerializeField] private Transform bulletInstantiationPosition;
     public EnemyLineOfSight myLineOfSight;
     public GameObject playerHealth;
     public GameObject myRobot;
@@ -25,7 +25,6 @@ public class AttackState : MonoBaseState
 
     private void Awake()
     {
-
         myShootPlayer = GetComponent<ShootPlayer>();
         player = GameObject.FindGameObjectWithTag("Player");
         myLineOfSight = GetComponent<EnemyLineOfSight>();
@@ -43,6 +42,10 @@ public class AttackState : MonoBaseState
 
     private void Update()
     {
+        if (myWorldState.PlayerLife <= 0)
+        {
+            OnNeedsReplan?.Invoke();
+        }
         if (onState)
         {
             if (myWorldState.seenPlayer)
@@ -50,42 +53,39 @@ public class AttackState : MonoBaseState
                 if (myMovement.target != player.transform)
                     myMovement.target = player.transform;
             }
+
             distance = (player.transform.position - transform.position).sqrMagnitude;
         }
     }
 
     public override void UpdateLoop()
     {
-       
-
     }
 
     public override IState ProcessInput()
     {
+        
         if (myWorldState.seenPlayer)
+        {
+            if (distance >= 20f) //si me alejo del player, replaneo
             {
-                if (distance >= 20f) //si me alejo del player, replaneo
-                {
-                    onState = false;
-                    OnNeedsReplan?.Invoke();
-                }
-
-                if (distance < 10f)
-                {
-                    Instantiate(bullet, transform.position, transform.rotation);
-                    onState = false;
-                    return Transitions["ReloadState"];
-                }
+                onState = false;
+                OnNeedsReplan?.Invoke();
             }
 
-            if (!myWorldState.seenPlayer)
+            if (distance < 10f)
             {
+                Instantiate(bullet, transform.position, transform.rotation);
                 onState = false;
                 return Transitions["ReloadState"];
             }
+        }
 
-
-            return this;
-
+        if (!myWorldState.seenPlayer)
+        {
+            onState = false;
+            return Transitions["ReloadState"];
+        }
+        return this;
     }
 }

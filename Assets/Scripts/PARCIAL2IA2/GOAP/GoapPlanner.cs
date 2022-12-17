@@ -21,14 +21,15 @@ public class GoapPlanner
         var astar = new AStar<GOAPState>();
         //aca crear un path de emergencia.
         var path = astar.Run(from,
-                             state => Satisfies(state, to),
-                             node => Explode(node, actions, ref _watchdog),
-                             state => GetHeuristic(state, to));
-        
-            return CalculateGoap(path);
+            state => Satisfies(state, to),
+            node => Explode(node, actions, ref _watchdog),
+            state => GetHeuristic(state, to));
+
+        return CalculateGoap(path);
     }
 
-    public static FiniteStateMachine ConfigureFSM(IEnumerable<GOAPAction> plan, Func<IEnumerator, Coroutine> startCoroutine)
+    public static FiniteStateMachine ConfigureFSM(IEnumerable<GOAPAction> plan,
+        Func<IEnumerator, Coroutine> startCoroutine)
     {
         var prevState = plan.First().linkedState;
 
@@ -56,7 +57,7 @@ public class GoapPlanner
 
         return sequence.Skip(1).Select(x => x.generatingAction);
     }
-
+    
     private static float GetHeuristic(GOAPState from, GOAPState goal) => goal.values.Count(kv => !kv.In(from.values));
     private static bool Satisfies(GOAPState state, GOAPState to) => to.values.All(kv => kv.In(state.values));
 

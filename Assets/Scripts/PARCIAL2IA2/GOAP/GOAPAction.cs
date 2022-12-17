@@ -34,14 +34,32 @@ public class GOAPAction {
         preconditions[s] = value;
         return this;
     }
-    
-    public GOAPAction Effect(string s, bool value) {
-        effects[s] = value;
+    public GOAPAction Pre(string key, float value)
+    {
+        preconditions[key] = value;
         return this;
     }
-
+    
+    public GOAPAction Effect(string key, bool value) {
+        effects[key] = value;
+        return this;
+    }
+    
+    public GOAPAction Effect(string key, int value)
+    {
+        effects[key] = value;
+        return this;
+    }
+    
+    public GOAPAction Effect(string key, float value)
+    {
+        effects[key] = value;
+        return this;
+    }
+    
     public GOAPAction LinkedState(IState state) {
         linkedState = state;
         return this;
     }
+    
 }
